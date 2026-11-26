@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ task.title }}{% endblock %}
+
+{% block content %}
+<div class="task-detail-card">
+    <div class="task-detail-header">
+        <h2>{{ task.title }}</h2>
+        <span class="badge badge-{{ task.status }}">{{ task.get_status_display }}</span>
+    </div>
+    
+    <div class="task-detail-body">
+        <p>{{ task.description|linebreaks|default:"Описание отсутствует." }}</p>
+    </div>
+    
+    <div class="task-detail-meta">
+        <p><strong>Создано:</strong> {{ task.created_at|date:"d.m.Y H:i" }}</p>
+        <p><strong>Последнее изменение:</strong> {{ task.updated_at|date:"d.m.Y H:i" }}</p>
+    </div>
+    
+    <div class="task-detail-actions">
+        <a href="{% url 'tasks:list' %}" class="btn">← Назад</a>
+        <a href="{% url 'tasks:update' task.pk %}" class="btn">Редактировать</a>
+        <a href="{% url 'tasks:delete' task.pk %}" class="btn">Удалить</a>
+    </div>
+</div>
+{% endblock %}

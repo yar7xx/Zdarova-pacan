@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои задачи{% endblock %}
+
+{% block content %}
+<div class="task-header">
+    <h2>Мои задачи</h2>
+    <a href="{% url 'tasks:create' %}" class="btn">+ Создать задачу</a>
+</div>
+
+<div class="filters">
+    <span>Фильтр:</span>
+    <a href="?status=" class="filter-link {% if not current_status %}active{% endif %}">Все</a>
+    <a href="?status=todo" class="filter-link {% if current_status == 'todo' %}active{% endif %}">Новая</a>
+    <a href="?status=in_progress" class="filter-link {% if current_status == 'in_progress' %}active{% endif %}">В работе</a>
+    <a href="?status=done" class="filter-link {% if current_status == 'done' %}active{% endif %}">Выполнена</a>
+</div>
+
+{% if tasks %}
+    <div class="task-list">
+        {% for task in tasks %}
+            <div class="task-card">
+                <div class="task-info">
+                    <h3><a href="{% url 'tasks:detail' task.pk %}">{{ task.title }}</a></h3>
+                    <p class="task-desc">{{ task.description|truncatechars:100|default:"Без описания" }}</p>
+                    <div class="task-meta">
+                        <span class="badge">{{ task.get_status_display }}</span>
+                        <span class="date">Создано: {{ task.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                </div>
+                <div class="task-actions">
+                    <a href="{% url 'tasks:update' task.pk %}" class="btn btn-sm">Редактировать</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}" class="btn btn-sm">Назад</a>
+            {% else %}
+                <span></span>
+            {% endif %}
+            
+            <span class="page-info">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}" class="btn btn-sm">Вперед</a>
+            {% else %}
+                <span></span>
+            {% endif %}
+        </div>
+    {% endif %}
+
+{% else %}
+    <div class="empty-state">
+        <p>У вас пока нет задач. Создайте первую!</p>
+    </div>
+{% endif %}
+{% endblock %}
